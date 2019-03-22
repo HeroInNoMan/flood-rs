@@ -7,26 +7,35 @@ use std::fmt::{Display, Formatter, Result};
 
 #[derive(Clone, Debug, Eq, PartialEq, Copy)]
 enum Color {
-    RED,
-    YELLOW,
     BLUE,
+    GREEN,
+    PURPLE,
+    RED,
+    WHITE,
+    YELLOW,
 }
 
 impl Distribution<Color> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Color {
-        match rng.gen_range(0, 3) {
-            0 => Color::RED,
-            1 => Color::YELLOW,
-            _ => Color::BLUE,
+        match rng.gen_range(0, 6) {
+            0 => Color::BLUE,
+            1 => Color::GREEN,
+            2 => Color::PURPLE,
+            3 => Color::RED,
+            4 => Color::WHITE,
+            _ => Color::YELLOW,
         }
     }
 }
 impl Display for Color {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let cell = match self {
-            Color::RED => " ".on_red(),
-            Color::YELLOW => " ".on_yellow(),
             Color::BLUE => " ".on_blue(),
+            Color::GREEN => " ".on_green(),
+            Color::PURPLE => " ".on_purple(),
+            Color::RED => " ".on_red(),
+            Color::WHITE => " ".on_white(),
+            Color::YELLOW => " ".on_yellow(),
         };
         write!(f, "{}", cell)
     }
@@ -140,8 +149,11 @@ fn read_input() -> Option<Color> {
     std::io::stdin().read_line(&mut input).unwrap();
     match input.as_ref() {
         "b\n" => Some(Color::BLUE),
-        "y\n" => Some(Color::YELLOW),
+        "g\n" => Some(Color::GREEN),
+        "p\n" => Some(Color::PURPLE),
         "r\n" => Some(Color::RED),
+        "w\n" => Some(Color::WHITE),
+        "y\n" => Some(Color::YELLOW),
         _ => None,
     }
 }
