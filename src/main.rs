@@ -24,9 +24,9 @@ impl Distribution<Color> for Standard {
 impl Display for Color {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let cell = match self {
-            Color::RED => "X".on_red(),
-            Color::YELLOW => "X".on_yellow(),
-            Color::BLUE => "X".on_blue(),
+            Color::RED => " ".on_red(),
+            Color::YELLOW => " ".on_yellow(),
+            Color::BLUE => " ".on_blue(),
         };
         write!(f, "{}", cell)
     }
@@ -66,6 +66,10 @@ impl FloodBoard {
         flood_board
     }
 
+    fn change_color(&mut self, color: Color) {
+        println!("Changing to {}!", color)
+    }
+
     fn display(&self) {
         for col in &self.board {
             for cell in col {
@@ -76,7 +80,26 @@ impl FloodBoard {
     }
 }
 
-fn play(board: FloodBoard) {}
+fn read_input() -> Option<Color> {
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).unwrap();
+    match input.as_ref() {
+        "b\n" => Some(Color::BLUE),
+        "y\n" => Some(Color::YELLOW),
+        "r\n" => Some(Color::RED),
+        _ => None,
+    }
+}
+
+fn play(mut board: FloodBoard) {
+    loop {
+        let color = read_input();
+        if let Some(color) = color {
+            board.change_color(color);
+            board.display();
+        }
+    }
+}
 
 fn main() {
     let board = FloodBoard::new(3, 3);
