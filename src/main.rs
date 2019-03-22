@@ -5,7 +5,7 @@ use rand::{
 };
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq, Copy)]
 enum Color {
     RED,
     YELLOW,
@@ -65,6 +65,7 @@ impl FloodBoard {
         }
 
         flood_board.board[0].is_flooded = true;
+        flood_board.flood_neighbors(flood_board.board[0].color);
         flood_board
     }
 
@@ -72,24 +73,47 @@ impl FloodBoard {
         // ① change color of flooded colors
         for cell in &mut self.board {
             if cell.is_flooded {
-                cell.color = color.clone();
+                cell.color = color;
             }
         }
 
         // ② try to flood neighbors
-        self.flood_neighbors();
+        self.flood_neighbors(color);
 
         println!("Changing to {}!", color)
     }
 
-    fn flood_neighbors(&mut self) {
-        // // create queue with flooded elements
-        // let mut candidates = self
-        //     .board
-        //     .iter()
-        //     .flat_map(|row| row.iter())
-        //     .filter(|cell| cell.is_flooded);
+    fn flood_neighbors(&mut self, color: Color) {
+        // create queue with flooded elements
+        let mut candidates: std::collections::VecDeque<_> = self
+            .board
+            .iter()
+            .enumerate()
+            .filter(|(_, cell)| cell.is_flooded)
+            .map(|(cellidx, _)| cellidx)
+            .collect();
+        while let Some(candidate) = candidates.pop_front() {
+            let (x, y) = self.idx_to_pos(candidate);
+            let x = x as isize;
+            let y = y as isize;
 
+            let mut to_be_flooded = |x, y| {
+                if x >= 0 && x < self.width as isize && y >= 0 && y < self.height as isize {
+                    let cellidx = self.pos_to_idx(x as usize, y as usize);
+                    let mut cell = &mut self.board[cellidx];
+                    if !cell.is_flooded && cell.color == color {
+                        cell.is_flooded = true;
+                        candidates.push_back(cellidx);
+                    }
+                }
+            };
+
+            // left
+            to_be_flooded(x - 1, y);
+            to_be_flooded(x, y - 1);
+            to_be_flooded(x + 1, y);
+            to_be_flooded(x, y + 1);
+        }
     }
 
     fn display(&self) {
@@ -100,6 +124,14 @@ impl FloodBoard {
             print!("{}", cell.color);
         }
         println!("");
+    }
+
+    fn pos_to_idx(&self, col: usize, row: usize) -> usize {
+        col + (row * self.width)
+    }
+
+    fn idx_to_pos(&self, idx: usize) -> (usize, usize) {
+        (idx % self.width, idx / self.width % self.height)
     }
 }
 
@@ -125,7 +157,7 @@ fn play(mut board: FloodBoard) {
 }
 
 fn main() {
-    let board = FloodBoard::new(3, 4);
+    let board = FloodBoard::new(12, 12);
     board.display();
     play(board);
 }
