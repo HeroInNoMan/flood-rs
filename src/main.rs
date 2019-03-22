@@ -48,35 +48,58 @@ impl Cell {
 }
 
 struct FloodBoard {
-    board: Vec<Vec<Cell>>,
+    board: Vec<Cell>,
+    width: usize,
+    height: usize,
 }
 
 impl FloodBoard {
-    fn new(height: usize, width: usize) -> Self {
+    fn new(width: usize, height: usize) -> Self {
         let mut flood_board = FloodBoard {
-            board: vec![vec![Cell::default(); width]; height],
+            board: vec![Cell::default(); width * height],
+            width,
+            height,
         };
-        for col in &mut flood_board.board {
-            for cell in col {
-                cell.color = rand::random::<Color>();
-            }
+        for cell in &mut flood_board.board {
+            cell.color = rand::random::<Color>();
         }
 
-        flood_board.board[0][0].is_flooded = true;
+        flood_board.board[0].is_flooded = true;
         flood_board
     }
 
     fn change_color(&mut self, color: Color) {
+        // ① change color of flooded colors
+        for cell in &mut self.board {
+            if cell.is_flooded {
+                cell.color = color.clone();
+            }
+        }
+
+        // ② try to flood neighbors
+        self.flood_neighbors();
+
         println!("Changing to {}!", color)
     }
 
+    fn flood_neighbors(&mut self) {
+        // // create queue with flooded elements
+        // let mut candidates = self
+        //     .board
+        //     .iter()
+        //     .flat_map(|row| row.iter())
+        //     .filter(|cell| cell.is_flooded);
+
+    }
+
     fn display(&self) {
-        for col in &self.board {
-            for cell in col {
-                print!("{}", cell.color);
+        for (cellidx, cell) in self.board.iter().enumerate() {
+            if cellidx % self.width == 0 {
+                println!("");
             }
-            println!("");
+            print!("{}", cell.color);
         }
+        println!("");
     }
 }
 
@@ -102,7 +125,7 @@ fn play(mut board: FloodBoard) {
 }
 
 fn main() {
-    let board = FloodBoard::new(3, 3);
+    let board = FloodBoard::new(3, 4);
     board.display();
     play(board);
 }
