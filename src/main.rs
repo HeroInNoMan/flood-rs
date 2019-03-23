@@ -30,12 +30,12 @@ impl Distribution<Color> for Standard {
 impl Display for Color {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let cell = match self {
-            Color::BLUE => " ".on_blue(),
-            Color::GREEN => " ".on_green(),
-            Color::PURPLE => " ".on_purple(),
-            Color::RED => " ".on_red(),
-            Color::WHITE => " ".on_white(),
-            Color::YELLOW => " ".on_yellow(),
+            Color::BLUE => "  ".on_blue(),
+            Color::GREEN => "  ".on_green(),
+            Color::PURPLE => "  ".on_purple(),
+            Color::RED => "  ".on_red(),
+            Color::WHITE => "  ".on_white(),
+            Color::YELLOW => "  ".on_yellow(),
         };
         write!(f, "{}", cell)
     }
