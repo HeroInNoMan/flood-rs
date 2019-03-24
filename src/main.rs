@@ -117,11 +117,10 @@ impl FloodBoard {
                 }
             };
 
-            // left
-            to_be_flooded(x - 1, y);
-            to_be_flooded(x, y - 1);
-            to_be_flooded(x + 1, y);
-            to_be_flooded(x, y + 1);
+            to_be_flooded(x - 1, y); // left
+            to_be_flooded(x, y - 1); // up
+            to_be_flooded(x + 1, y); // right
+            to_be_flooded(x, y + 1); // down
         }
     }
 
